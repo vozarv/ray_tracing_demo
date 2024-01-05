@@ -125,9 +125,9 @@ int main() {
 
   vector<thread> threads;
 
-  int nx = 1080;
-  int ny = 720;
-  int ns = 100;
+  int nx = 2560;
+  int ny = 1440;
+  int ns = 200;
 
   vec3 lookfrom(8, 2, 2);
   vec3 lookat(0, 0, -1);
