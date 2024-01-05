@@ -35,6 +35,7 @@ vec3 color(const ray &r, hitable *world, int depth) {
   }
 }
 
+
 int main() {
 
   ofstream file("../output.ppm");
@@ -47,23 +48,21 @@ int main() {
   vec3 origin(0.0f, 0.0f, 0.0f);
 
   hitable *list[4];
-  list[0] =
-      new sphere(vec3(0, 0, -1), 0.5, new lambertian(vec3(0.8, 0.3, 0.3)));
-  list[1] =
-      new sphere(vec3(0, -100.5, -1), 100, new lambertian(vec3(0.8, 0.8, 0.0)));
+  list[0] = new sphere(vec3(0, 0, -1), 0.5, new lambertian(vec3(0.8, 0.3, 0.3)));
+  list[1] = new sphere(vec3(0, -100.5, -1), 100, new lambertian(vec3(0.8, 0.8, 0.0)));
   list[2] = new sphere(vec3(1, 0, -1), 0.5, new metal(vec3(0.8, 0.6, 0.2), 0.1));
   list[3] = new sphere(vec3(-1, 0, -1), 0.5, new metal(vec3(0.8, 0.8, 0.8), 0.4));
-
   hitable *world = new hitable_list(list, 4);
 
   int nx = 200;
   int ny = 100;
-  int ns = 100;
+  int ns = 1;
+
+  vec3 *image = new vec3[nx * ny];
 
   file << "P3\n" << nx << " " << ny << "\n255\n";
 
   for (int j = ny - 1; j >= 0; j--) {
-
     std::clog << "\rScanlines remaining: " << j << ' ' << std::flush;
 
     for (int i = 0; i < nx; i++) {
@@ -81,14 +80,13 @@ int main() {
 
       col /= float(ns);
       col = vec3(sqrt(col[0]), sqrt(col[1]), sqrt(col[2]));
-      int ir = int(255.99 * col[0]);
-      int ig = int(255.99 * col[1]);
-      int ib = int(255.99 * col[2]);
-      file << ir << " " << ig << " " << ib << "\n";
+
+      image[j * nx + i] = col;
     }
   }
 
   std::clog << "\rDone.                 \n";
 
+  save_image(image, nx, ny, file);
   file.close();
 }
