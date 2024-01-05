@@ -60,7 +60,7 @@ int main() {
 
   int nx = 200;
   int ny = 100;
-  int ns = 10;
+  int ns = 100;
 
   file << "P3\n" << nx << " " << ny << "\n255\n";
 
