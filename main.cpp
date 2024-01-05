@@ -72,8 +72,6 @@ void calc_pixel(int x, int y, vec3 *image, int width, int height, int ns,
   image[y * width + x] = col;
 }
 
-
-
 int main() {
 
   ofstream file("../output.ppm");
@@ -83,30 +81,33 @@ int main() {
 
   vector<thread> threads;
 
-  camera cam;
+  int nx = 200;
+  int ny = 100;
+  int ns = 50;
 
-  vec3 lower_left_corner(-2.0f, -1.0f, -1.0f);
-  vec3 horizontal(4.0f, 0.0f, 0.0f);
-  vec3 vertical(0.0f, 2.0f, 0.0f);
-  vec3 origin(0.0f, 0.0f, 0.0f);
+  camera cam(vec3(-2, 2, 1), vec3(0, 0, -1), vec3(0, 1, 0), 30, float(nx) / float(ny));
 
   hitable *list[4];
-  list[0] = new sphere(vec3(0, 0, -1), 0.5, new lambertian(vec3(0.8, 0.3, 0.3)));
-  list[1] = new sphere(vec3(0, -100.5, -1), 100, new lambertian(vec3(0.8, 0.8, 0.0)));
-  list[2] = new sphere(vec3(1, 0, -1), 0.5, new metal(vec3(0.8, 0.6, 0.2), 0.1));
-  //list[3] = new sphere(vec3(-1, 0, -1), 0.5, new metal(vec3(0.8, 0.8, 0.8), 0.4));
+  list[0] =
+      new sphere(vec3(0, 0, -1), 0.5, new lambertian(vec3(0.8, 0.3, 0.3)));
+  list[1] =
+      new sphere(vec3(0, -100.5, -1), 100, new lambertian(vec3(0.8, 0.8, 0.0)));
+  list[2] =
+      new sphere(vec3(1, 0, -1), 0.5, new metal(vec3(0.8, 0.6, 0.2), 0.1));
   list[3] = new sphere(vec3(-1, 0, -1), -0.45, new dielectric(1.5));
   hitable *world = new hitable_list(list, 4);
 
-  int nx = 200;
-  int ny = 100;
-  int ns = 100;
+  // float R = cos(M_PI / 4);
+  // hitable *list[2];
+  // list[0] = new sphere(vec3(-R, 0, -1), R, new lambertian(vec3(0, 0, 1)));
+  // list[1] = new sphere(vec3( R, 0, -1), R, new lambertian(vec3(1, 0, 0)));
+  // hitable *world = new hitable_list(list, 2);
 
   vec3 *image = new vec3[nx * ny];
 
   file << "P3\n" << nx << " " << ny << "\n255\n";
 
-  time_t start, end; 
+  time_t start, end;
   time(&start);
 
   for (int j = ny - 1; j >= 0; j--) {
@@ -129,10 +130,11 @@ int main() {
     }
   }
 
-  time(&end); 
+  time(&end);
 
   std::clog << "\rDone.                 \n";
-  std::clog << "Elapsed time: " << difftime(end, start) << " seconds" << std::endl;
+  std::clog << "Elapsed time: " << difftime(end, start) << " seconds"
+            << std::endl;
 
   save_image(image, nx, ny, file);
   file.close();
