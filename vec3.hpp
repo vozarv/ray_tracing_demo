@@ -71,3 +71,5 @@ inline vec3 cross(const vec3& v1, const vec3& v2) { return v1.cross(v2); }
 inline vec3 operator*(float t, const vec3& v) { return v * t; }
 
 vec3 unit_vector(const vec3& v){ return v.normalize(); }
+
+vec3 reflect(const vec3& v, const vec3& n){ return v - 2 * dot(v, n) * n; }
