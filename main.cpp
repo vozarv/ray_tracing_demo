@@ -83,9 +83,14 @@ int main() {
 
   int nx = 200;
   int ny = 100;
-  int ns = 50;
+  int ns = 100;
 
-  camera cam(vec3(-2, 2, 1), vec3(0, 0, -1), vec3(0, 1, 0), 30, float(nx) / float(ny));
+  vec3 lookfrom(3, 3, 2);
+  vec3 lookat(0, 0, -1);
+  float dist_to_focus = (lookfrom - lookat).length();
+  float aperture = 0.1;
+
+  camera cam(lookfrom, lookat, vec3(0, 1, 0), 20, float(nx) / float(ny), aperture, dist_to_focus);
 
   hitable *list[4];
   list[0] =

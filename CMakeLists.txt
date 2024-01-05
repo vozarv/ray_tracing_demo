@@ -5,4 +5,12 @@ project(ray_tracing_demo
         LANGUAGES CXX
 )
 
+# Add the -pg flag for profiling
+# for profiling : gprof ray_tracing gmon.out > analysis.txt
+
+# if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+#     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pg")
+# endif()
+
+
 add_executable(ray_tracing main.cpp)
