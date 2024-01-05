@@ -125,14 +125,14 @@ int main() {
 
   vector<thread> threads;
 
-  int nx = 200;
-  int ny = 100;
-  int ns = 2;
+  int nx = 1080;
+  int ny = 720;
+  int ns = 100;
 
   vec3 lookfrom(8, 2, 2);
   vec3 lookat(0, 0, -1);
   float dist_to_focus = (lookfrom - lookat).length();
-  float aperture = 0.1;
+  float aperture = 0.01;
   float vfov = 30.0;
 
   camera cam(lookfrom, lookat, vec3(0, 1, 0), vfov, float(nx) / float(ny),
