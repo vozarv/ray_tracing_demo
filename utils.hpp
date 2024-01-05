@@ -10,9 +10,25 @@ double random_double(double min, double max) {
 }
 
 vec3 random_in_unit_sphere() {
-  vec3 p;
-  do {
-    p = 2.0 * vec3(random_double(-1.0, 1.0), random_double(-1.0, 1.0), random_double(-1.0, 1.0)) - vec3(1.0, 1.0, 1.0);
-  } while (p.length2() >= 1.0);
+
+
+  double r = random_double(0.0, 1.0);
+  double azimuth = random_double(0.0, 2.0 * M_PI);
+  double elevation = random_double(0.0, M_PI);
+
+  vec3 p(r * cos(elevation) * cos(azimuth), r * cos(elevation) * sin(azimuth),
+         r * sin(elevation));
+
+  return p;
+}
+
+vec3 random_in_unit_disk() {
+  
+
+  double r = random_double(0.0, 1.0);
+  double azimuth = random_double(0.0, 2.0 * M_PI);
+
+  vec3 p(r * cos(azimuth), r * sin(azimuth), 0.0);
+
   return p;
 }
