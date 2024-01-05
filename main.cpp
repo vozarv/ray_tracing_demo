@@ -8,8 +8,25 @@
 #include <iostream>
 #include <math.h>
 #include <stdlib.h>
+#include <thread>
 
 using namespace std;
+
+void save_image(vec3 *image, int width, int height, ofstream &file) {
+
+  for (int j = height - 1; j >= 0; j--) {
+    for (int i = 0; i < width; i++) {
+
+      vec3 pixel = image[i + j * width];
+
+      int ir = int(255.99 * pixel[0]);
+      int ig = int(255.99 * pixel[1]);
+      int ib = int(255.99 * pixel[2]);
+
+      file << ir << " " << ig << " " << ib << "\n";
+    }
+  }
+}
 
 vec3 color(const ray &r, hitable *world, int depth) {
 
@@ -35,10 +52,36 @@ vec3 color(const ray &r, hitable *world, int depth) {
   }
 }
 
+void calc_pixel(int x, int y, vec3 *image, int width, int height, int ns,
+                camera cam, hitable *world) {
+
+  vec3 col(0, 0, 0);
+
+  for (int s = 0; s < ns; s++) {
+
+    float u = float(x + random_double(0.0, 1.0)) / float(width);
+    float v = float(y + random_double(0.0, 1.0)) / float(height);
+
+    ray r = cam.get_ray(u, v);
+    col += color(r, world, 0);
+  }
+
+  col /= float(ns);
+  col = vec3(sqrt(col[0]), sqrt(col[1]), sqrt(col[2]));
+
+  image[y * width + x] = col;
+}
+
+
 
 int main() {
 
   ofstream file("../output.ppm");
+
+  const int numThreads = 32;
+  cout << "Number of threads: " << numThreads << endl;
+
+  vector<thread> threads;
 
   camera cam;
 
@@ -56,36 +99,39 @@ int main() {
 
   int nx = 200;
   int ny = 100;
-  int ns = 1;
+  int ns = 10;
 
   vec3 *image = new vec3[nx * ny];
 
   file << "P3\n" << nx << " " << ny << "\n255\n";
 
+  time_t start, end; 
+  time(&start);
+
   for (int j = ny - 1; j >= 0; j--) {
-    std::clog << "\rScanlines remaining: " << j << ' ' << std::flush;
+    std::clog << "\rScanlines remaining: " << j << std::flush;
 
-    for (int i = 0; i < nx; i++) {
+    for (int i = 0; i < nx; i += numThreads) {
 
-      vec3 col(0, 0, 0);
-
-      for (int s = 0; s < ns; s++) {
-
-        float u = float(i + random_double(0.0, 1.0)) / float(nx);
-        float v = float(j + random_double(0.0, 1.0)) / float(ny);
-
-        ray r = cam.get_ray(u, v);
-        col += color(r, world, 0);
+      for (int t = 0; t < numThreads; t++) {
+        if (i + t < nx) {
+          threads.emplace_back(calc_pixel, i + t, j, image, nx, ny, ns, cam,
+                               world);
+        }
       }
 
-      col /= float(ns);
-      col = vec3(sqrt(col[0]), sqrt(col[1]), sqrt(col[2]));
+      for (auto &thread : threads) {
+        thread.join();
+      }
 
-      image[j * nx + i] = col;
+      threads.clear();
     }
   }
 
+  time(&end); 
+
   std::clog << "\rDone.                 \n";
+  std::clog << "Elapsed time: " << difftime(end, start) << " seconds" << std::endl;
 
   save_image(image, nx, ny, file);
   file.close();
