@@ -75,7 +75,7 @@ void calc_pixel(int x, int y, vec3 *image, int width, int height, int ns,
 hitable *random_scene() {
 
   int n = 500;
-  hitable **list = new hitable*[n + 1];
+  hitable **list = new hitable *[n + 1];
   list[0] =
       new sphere(vec3(0, -1000, 0), 1000, new lambertian(vec3(0.5, 0.5, 0.5)));
   int i = 1;
@@ -89,10 +89,12 @@ hitable *random_scene() {
 
       if ((center - vec3(4, 0.2, 0)).length() > 0.9) {
         if (choose_material < 0.8) {
-          list[i++] = new sphere(center, 0.2,
-                                 new lambertian(vec3(random_double(0.0, 1.0),
-                                                     random_double(0.0, 1.0),
-                                                     random_double(0.0, 1.0))));
+          list[i++] = new moving_sphere(
+              center, center + vec3(0, 0.5 * random_double(0.0, 1.0), 0.0), 0.0,
+              1.0, 0.2,
+              new lambertian(vec3(random_double(0.0, 1.0),
+                                  random_double(0.0, 1.0),
+                                  random_double(0.0, 1.0))));
         } else if (choose_material < 0.95) {
           list[i++] =
               new sphere(center, 0.2,
@@ -125,24 +127,25 @@ int main() {
 
   vector<thread> threads;
 
-  int nx = 2560;
-  int ny = 1440;
-  int ns = 200;
+  int nx = 640;
+  int ny = 480;
+  int ns = 10;
 
-  vec3 lookfrom(8, 2, 2);
-  vec3 lookat(0, 0, -1);
+  vec3 lookfrom(13, 2, 3);
+  vec3 lookat(0, 0, 0);
   float dist_to_focus = (lookfrom - lookat).length();
   float aperture = 0.01;
-  float vfov = 30.0;
+  float vfov = 20.0;
 
   camera cam(lookfrom, lookat, vec3(0, 1, 0), vfov, float(nx) / float(ny),
-             aperture, dist_to_focus);
+             aperture, dist_to_focus, 0.0, 1.0);
 
   // hitable *list[4];
   // list[0] =
   //     new sphere(vec3(0, 0, -1), 0.5, new lambertian(vec3(0.8, 0.3, 0.3)));
   // list[1] =
-  //     new sphere(vec3(0, -100.5, -1), 100, new lambertian(vec3(0.8, 0.8, 0.0)));
+  //     new sphere(vec3(0, -100.5, -1), 100, new lambertian(vec3(0.8, 0.8,
+  //     0.0)));
   // list[2] =
   //     new sphere(vec3(1, 0, -1), 0.5, new metal(vec3(0.8, 0.6, 0.2), 0.1));
   // list[3] = new sphere(vec3(-1, 0, -1), -0.45, new dielectric(1.5));

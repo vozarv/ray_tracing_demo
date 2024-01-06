@@ -15,7 +15,7 @@ public:
   virtual bool scatter(const ray &r_in, const hit_record &rec,
                        vec3 &attenuation, ray &scattered) const {
     vec3 target = rec.p + rec.normal + random_in_unit_sphere();
-    scattered = ray(rec.p, target - rec.p);
+    scattered = ray(rec.p, target - rec.p, r_in.time());
     attenuation = albedo;
     return true;
   }
@@ -34,7 +34,7 @@ public:
   virtual bool scatter(const ray &r_in, const hit_record &rec,
                        vec3 &attenuation, ray &scattered) const {
     vec3 reflected = reflect(unit_vector(r_in.direction()), rec.normal);
-    scattered = ray(rec.p, reflected + fuzz * random_in_unit_sphere());
+    scattered = ray(rec.p, reflected + fuzz * random_in_unit_sphere(), r_in.time());
     attenuation = albedo;
     return (dot(scattered.direction(), rec.normal) > 0);
   }
@@ -85,10 +85,10 @@ public:
     }
 
     if(random_double(0.0, 1.0) < reflect_prob) {
-      scattered = ray(rec.p, reflected);
+      scattered = ray(rec.p, reflected, r_in.time());
     }
     else{
-      scattered = ray(rec.p, refracted);
+      scattered = ray(rec.p, refracted, r_in.time());
     }
 
     return true;
