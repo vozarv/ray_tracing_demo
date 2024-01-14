@@ -11,6 +11,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include <thread>
+#include "scenes.hpp"
 
 using namespace std;
 
@@ -77,51 +78,7 @@ void calc_pixel(int x, int y, vec3 *image, int width, int height, int ns,
   image[y * width + x] = col;
 }
 
-hitable *random_scene() {
 
-  int n = 500;
-  hitable **list = new hitable *[n + 1];
-  list[0] =
-      new sphere(vec3(0, -1000, 0), 1000, new lambertian(vec3(0.5, 0.5, 0.5)));
-  int i = 1;
-
-  for (int a = -11; a < 11; a++) {
-    for (int b = -11; b < 11; b++) {
-
-      float choose_material = random_double(0.0, 1.0);
-      vec3 center(a + 0.9 * random_double(0.0, 1.0), 0.2,
-                  b + 0.9 * random_double(0.0, 1.0));
-
-      if ((center - vec3(4, 0.2, 0)).length() > 0.9) {
-        if (choose_material < 0.8) {
-          list[i++] = new moving_sphere(
-              center, center + vec3(0, 0.5 * random_double(0.0, 1.0), 0.0), 0.0,
-              1.0, 0.2,
-              new lambertian(vec3(random_double(0.0, 1.0),
-                                  random_double(0.0, 1.0),
-                                  random_double(0.0, 1.0))));
-        } else if (choose_material < 0.95) {
-          list[i++] =
-              new sphere(center, 0.2,
-                         new metal(vec3(0.5 * (1.0 + random_double(0.0, 1.0)),
-                                        0.5 * (1.0 + random_double(0.0, 1.0)),
-                                        0.5 * (1.0 + random_double(0.0, 1.0))),
-                                   0.5 * random_double(0.8, 1.2)));
-        } else {
-          list[i++] = new sphere(center, 0.2, new dielectric(1.5));
-        }
-      }
-    }
-  }
-
-  list[i++] = new sphere(vec3(0, 1, 0), 1.0, new dielectric(1.5));
-  list[i++] =
-      new sphere(vec3(-4, 1, 0), 1.0, new lambertian(vec3(0.4, 0.2, 0.1)));
-  list[i++] =
-      new sphere(vec3(4, 1, 0), 1.0, new metal(vec3(0.7, 0.6, 0.5), 0.0));
-
-  return new bvh_node(list, i, 0.0, 1.0);
-}
 
 int main() {
 
@@ -132,9 +89,9 @@ int main() {
 
   vector<thread> threads;
 
-  int nx = 200;
-  int ny = 100;
-  int ns = 4;
+  int nx = 480;
+  int ny = 360;
+  int ns = 10;
 
   vec3 lookfrom(13, 2, 3);
   vec3 lookat(0, 0, 0);
@@ -145,37 +102,11 @@ int main() {
   camera cam(lookfrom, lookat, vec3(0, 1, 0), vfov, float(nx) / float(ny),
              aperture, dist_to_focus, 0.0, 1.0);
 
-  // hitable *list[4];
-  // list[0] =
-  //     new sphere(vec3(0, 0, -1), 0.5, new lambertian(vec3(0.8, 0.3, 0.3)));
-  // list[1] =
-  //     new sphere(vec3(0, -100.5, -1), 100, new lambertian(vec3(0.8, 0.8,
-  //     0.0)));
-  // list[2] =
-  //     new sphere(vec3(1, 0, -1), 0.5, new metal(vec3(0.8, 0.6, 0.2), 0.1));
-  // list[3] = new sphere(vec3(-1, 0, -1), -0.45, new dielectric(1.5));
-  // hitable *world = new bvh_node(list, 4, 0.00001, MAXFLOAT);
+  //hitable *world = random_scene();
+  //hitable *world = two_horizontal_spheres();
+  //hitable *world = four_spheres();
+  hitable *world = two_checker_spheres(); 
 
-  // float R = cos(M_PI / 4);
-  // hitable *list[2];
-  // list[0] = new sphere(vec3(-R, 0, -1), R, new lambertian(vec3(0, 0, 1)));
-  // list[1] = new sphere(vec3( R, 0, -1), R, new lambertian(vec3(1, 0, 0)));
-  // hitable *world = new hitable_list(list, 2);
-
-  hitable *world = random_scene();
-
-  /*PLAYGROUND FOR CHECKING FUNCTIONS*/
-  /************************************************************************************************/
-
-  // aabb x(vec3(0, 0, 0), vec3(1, 1, 1));
-  // aabb y(vec3(3, 3, 3), vec3(10, 10,11));
-
-  // aabb c = surrounding_box(x, y);
-
-  // cout << c.min().x() << " " << c.min().y()<< " " << c.min().z() << endl;
-  // cout << c.max().x() << " " << c.max().y()<< " " << c.max().z() << endl;
-
-  /************************************************************************************************/
 
   vec3 *image = new vec3[nx * ny];
 
