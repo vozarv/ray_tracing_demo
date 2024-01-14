@@ -9,6 +9,13 @@ public:
   virtual bool hit(const ray &r, float t_min, float t_max,
                    hit_record &rec) const;
 
+  bool bounding_box(float t0, float t1, aabb &box) const override
+  {
+    box = aabb(center - vec3(radius, radius, radius),
+                center + vec3(radius, radius, radius));
+    return true;
+  }
+
   vec3 center;
   float radius;
   material *mat;
@@ -57,6 +64,17 @@ class moving_sphere : public hitable {
     return center0 + ((time - time0) / (time1 - time0)) * (center1 - center0);
   }
 
+  bool bounding_box(float t0, float t1, aabb &box) const override {
+    
+    aabb box0 = aabb(center0 - vec3(radius, radius, radius),
+                center0 + vec3(radius, radius, radius));
+    aabb box1 = aabb(center1 - vec3(radius, radius, radius),
+                center1 + vec3(radius, radius, radius));
+
+    box = surrounding_box(box0, box1);
+    
+    return true;
+  }
 
   vec3 center0, center1;
   float time0, time1;

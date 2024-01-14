@@ -1,3 +1,4 @@
+#include "bvh.hpp"
 #include "camera.hpp"
 #include "float.h"
 #include "hitable_list.hpp"
@@ -6,6 +7,7 @@
 #include "utils.hpp"
 #include <fstream>
 #include <iostream>
+#include <iomanip>
 #include <math.h>
 #include <stdlib.h>
 #include <thread>
@@ -13,6 +15,9 @@
 using namespace std;
 
 void save_image(vec3 *image, int width, int height, ofstream &file) {
+
+  file << "P3\n" << width << " " << height << "\n255\n";
+
 
   for (int j = height - 1; j >= 0; j--) {
     for (int i = 0; i < width; i++) {
@@ -115,7 +120,7 @@ hitable *random_scene() {
   list[i++] =
       new sphere(vec3(4, 1, 0), 1.0, new metal(vec3(0.7, 0.6, 0.5), 0.0));
 
-  return new hitable_list(list, i);
+  return new bvh_node(list, i, 0.0, 1.0);
 }
 
 int main() {
@@ -127,9 +132,9 @@ int main() {
 
   vector<thread> threads;
 
-  int nx = 480;
-  int ny = 360;
-  int ns = 100;
+  int nx = 200;
+  int ny = 100;
+  int ns = 4;
 
   vec3 lookfrom(13, 2, 3);
   vec3 lookat(0, 0, 0);
@@ -149,7 +154,7 @@ int main() {
   // list[2] =
   //     new sphere(vec3(1, 0, -1), 0.5, new metal(vec3(0.8, 0.6, 0.2), 0.1));
   // list[3] = new sphere(vec3(-1, 0, -1), -0.45, new dielectric(1.5));
-  // hitable *world = new hitable_list(list, 4);
+  // hitable *world = new bvh_node(list, 4, 0.00001, MAXFLOAT);
 
   // float R = cos(M_PI / 4);
   // hitable *list[2];
@@ -159,15 +164,26 @@ int main() {
 
   hitable *world = random_scene();
 
-  vec3 *image = new vec3[nx * ny];
+  /*PLAYGROUND FOR CHECKING FUNCTIONS*/
+  /************************************************************************************************/
 
-  file << "P3\n" << nx << " " << ny << "\n255\n";
+  // aabb x(vec3(0, 0, 0), vec3(1, 1, 1));
+  // aabb y(vec3(3, 3, 3), vec3(10, 10,11));
+
+  // aabb c = surrounding_box(x, y);
+
+  // cout << c.min().x() << " " << c.min().y()<< " " << c.min().z() << endl;
+  // cout << c.max().x() << " " << c.max().y()<< " " << c.max().z() << endl;
+
+  /************************************************************************************************/
+
+  vec3 *image = new vec3[nx * ny];
 
   time_t start, end;
   time(&start);
 
   for (int j = ny - 1; j >= 0; j--) {
-    std::clog << "\rScanlines remaining: " << j << std::flush;
+    std::clog << "\rScanlines remaining: " << setw(4) << setfill('0') << j << std::flush;
 
     for (int i = 0; i < nx; i += numThreads) {
 
