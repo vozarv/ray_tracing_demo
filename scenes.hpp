@@ -72,27 +72,38 @@ hitable *four_spheres() {
 }
 
 hitable *two_horizontal_spheres() {
-  
+
   float R = cos(M_PI / 4);
   hitable *list[2];
 
-  list[0] = new sphere(vec3(-R, 0, -1), R, 
-                    new lambertian(new constant_texture(vec3(0, 0, 1))));
-  list[1] = new sphere(vec3(R, 0, -1), R, 
-                    new lambertian(new constant_texture(vec3(1, 0, 0))));
+  list[0] = new sphere(vec3(-R, 0, -1), R,
+                       new lambertian(new constant_texture(vec3(0, 0, 1))));
+  list[1] = new sphere(vec3(R, 0, -1), R,
+                       new lambertian(new constant_texture(vec3(1, 0, 0))));
 
   return new bvh_node(list, 2, 0.0, 1.0);
 }
 
 hitable *two_checker_spheres() {
-      texture *checker =
+  texture *checker =
       new checker_texture(new constant_texture(vec3(0.2, 0.3, 0.1)),
                           new constant_texture(vec3(0.9, 0.9, 0.9)));
 
-    int n = 50;
-    hitable **list = new hitable *[n + 1];
-    list[0] = new sphere(vec3(0, -10, 0), 10, new lambertian(checker));
-    list[1] = new sphere(vec3(0, 10, 0), 10, new lambertian(checker));
+  int n = 50;
+  hitable **list = new hitable *[n + 1];
+  list[0] = new sphere(vec3(0, -10, 0), 10, new lambertian(checker));
+  list[1] = new sphere(vec3(0, 10, 0), 10, new lambertian(checker));
 
-    return new hitable_list(list, 2);
+  return new hitable_list(list, 2);
+}
+
+hitable *two_perlin_spheres() {
+  texture *pertext = new noise_texture();
+
+  int n = 50;
+  hitable **list = new hitable *[n + 1];
+  list[0] = new sphere(vec3(0, -1000, 0), 1000, new lambertian(pertext));
+  list[1] = new sphere(vec3(0, 2, 0), 2, new lambertian(pertext));
+
+  return new hitable_list(list, 2);
 }

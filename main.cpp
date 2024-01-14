@@ -105,8 +105,8 @@ int main() {
   //hitable *world = random_scene();
   //hitable *world = two_horizontal_spheres();
   //hitable *world = four_spheres();
-  hitable *world = two_checker_spheres(); 
-
+  //hitable *world = two_checker_spheres(); 
+  hitable *world = two_perlin_spheres();
 
   vec3 *image = new vec3[nx * ny];
 
