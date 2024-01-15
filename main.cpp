@@ -91,7 +91,7 @@ int main() {
 
   int nx = 480;
   int ny = 360;
-  int ns = 10;
+  int ns = 100;
 
   vec3 lookfrom(13, 2, 3);
   vec3 lookat(0, 0, 0);

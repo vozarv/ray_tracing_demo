@@ -98,12 +98,13 @@ hitable *two_checker_spheres() {
 }
 
 hitable *two_perlin_spheres() {
-  texture *pertext = new noise_texture();
+  texture *pertext_small = new noise_texture(2);
+  //texture *pertext_large = new noise_texture(1000);
 
   int n = 50;
   hitable **list = new hitable *[n + 1];
-  list[0] = new sphere(vec3(0, -1000, 0), 1000, new lambertian(pertext));
-  list[1] = new sphere(vec3(0, 2, 0), 2, new lambertian(pertext));
+  list[0] = new sphere(vec3(0, -1000, 0), 1000, new lambertian(pertext_small));
+  list[1] = new sphere(vec3(0, 2, 0), 2, new lambertian(pertext_small));
 
   return new hitable_list(list, 2);
 }
