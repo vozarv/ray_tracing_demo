@@ -4,6 +4,9 @@
 #include "sphere.hpp"
 #include "texture.hpp"
 
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+
 hitable *random_scene() {
 
   int n = 500;
@@ -99,12 +102,33 @@ hitable *two_checker_spheres() {
 
 hitable *two_perlin_spheres() {
   texture *pertext_small = new noise_texture(2);
-  //texture *pertext_large = new noise_texture(1000);
-
   int n = 50;
   hitable **list = new hitable *[n + 1];
   list[0] = new sphere(vec3(0, -1000, 0), 1000, new lambertian(pertext_small));
   list[1] = new sphere(vec3(0, 2, 0), 2, new lambertian(pertext_small));
+
+  return new hitable_list(list, 2);
+}
+
+hitable *earth_sphere() {
+  texture *pertext_small = new noise_texture(2);
+
+  int nx, ny, nz;
+  unsigned char *tex_data = stbi_load("../earthmap.jpg", &nx, &ny, &nz, 0);
+  if (tex_data == NULL) {
+    std::cout << "Failed to load earthmap.jpg" << std::endl;
+    return NULL;
+  }
+  std::cout << "Loaded image with dimensions: " << nx << " " << ny << " " << nz << std::endl;
+
+
+  texture *earth_texture = new image_texture(tex_data, nx, ny);
+  material *mat = new lambertian(earth_texture);
+
+  int n = 50;
+  hitable **list = new hitable * [n + 1];
+  list[0] = new sphere(vec3(0, -1000, 0), 1000, new lambertian(pertext_small));
+  list[1] = new sphere(vec3(0, 2, 0), 2, mat);
 
   return new hitable_list(list, 2);
 }

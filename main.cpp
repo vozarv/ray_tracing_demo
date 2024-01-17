@@ -3,22 +3,21 @@
 #include "float.h"
 #include "hitable_list.hpp"
 #include "materials.hpp"
+#include "scenes.hpp"
 #include "sphere.hpp"
 #include "utils.hpp"
 #include <fstream>
-#include <iostream>
 #include <iomanip>
+#include <iostream>
 #include <math.h>
 #include <stdlib.h>
 #include <thread>
-#include "scenes.hpp"
 
 using namespace std;
 
 void save_image(vec3 *image, int width, int height, ofstream &file) {
 
   file << "P3\n" << width << " " << height << "\n255\n";
-
 
   for (int j = height - 1; j >= 0; j--) {
     for (int i = 0; i < width; i++) {
@@ -78,8 +77,6 @@ void calc_pixel(int x, int y, vec3 *image, int width, int height, int ns,
   image[y * width + x] = col;
 }
 
-
-
 int main() {
 
   ofstream file("../output.ppm");
@@ -89,8 +86,8 @@ int main() {
 
   vector<thread> threads;
 
-  int nx = 480;
-  int ny = 360;
+  int nx = 1024;
+  int ny = 512;
   int ns = 100;
 
   vec3 lookfrom(13, 2, 3);
@@ -102,11 +99,12 @@ int main() {
   camera cam(lookfrom, lookat, vec3(0, 1, 0), vfov, float(nx) / float(ny),
              aperture, dist_to_focus, 0.0, 1.0);
 
-  //hitable *world = random_scene();
-  //hitable *world = two_horizontal_spheres();
-  //hitable *world = four_spheres();
-  //hitable *world = two_checker_spheres(); 
-  hitable *world = two_perlin_spheres();
+  // hitable *world = random_scene();
+  // hitable *world = two_horizontal_spheres();
+  // hitable *world = four_spheres();
+  // hitable *world = two_checker_spheres();
+  // hitable *world = two_perlin_spheres();
+  hitable *world = earth_sphere();
 
   vec3 *image = new vec3[nx * ny];
 
@@ -114,7 +112,8 @@ int main() {
   time(&start);
 
   for (int j = ny - 1; j >= 0; j--) {
-    std::clog << "\rScanlines remaining: " << setw(4) << setfill('0') << j << std::flush;
+    std::clog << "\rScanlines remaining: " << setw(4) << setfill('0') << j
+              << std::flush;
 
     for (int i = 0; i < nx; i += numThreads) {
 
