@@ -14,3 +14,5 @@ project(ray_tracing_demo
 
 
 add_executable(ray_tracing main.cpp)
+
+add_executable(business_card card.cpp)
