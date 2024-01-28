@@ -117,7 +117,7 @@ hitable *earth_sphere() {
   texture *pertext_small = new noise_texture(2);
 
   int nx, ny, nz;
-  unsigned char *tex_data = stbi_load("../earthmap.jpg", &nx, &ny, &nz, 0);
+  unsigned char *tex_data = stbi_load("../images/earthmap.jpg", &nx, &ny, &nz, 0);
   if (tex_data == NULL) {
     std::cout << "Failed to load earthmap.jpg" << std::endl;
     return NULL;
@@ -140,7 +140,7 @@ hitable *simple_light() {
   texture *pertext_small = new noise_texture(2);
 
   int nx, ny, nz;
-  unsigned char *tex_data = stbi_load("../earthmap.jpg", &nx, &ny, &nz, 0);
+  unsigned char *tex_data = stbi_load("../images/earthmap.jpg", &nx, &ny, &nz, 0);
   if (tex_data == NULL) {
     std::cout << "Failed to load earthmap.jpg" << std::endl;
     return NULL;
@@ -288,7 +288,7 @@ hitable *final_scene() {
                                   new constant_texture(vec3(1.0, 1.0, 1.0)));
 
   int nx, ny, nn;
-  unsigned char *tex_data = stbi_load("../earthmap.jpg", &nx, &ny, &nn, 0);
+  unsigned char *tex_data = stbi_load("../images/earthmap.jpg", &nx, &ny, &nn, 0);
   if (tex_data == NULL) {
     std::cout << "Failed to load earthmap.jpg" << std::endl;
     return NULL;
