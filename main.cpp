@@ -41,19 +41,22 @@ vec3 color(const ray &r, hitable *world, int depth) {
     ray scattered;
     vec3 attenuation(0.01, 0.01, 0.01);
 
+    vec3 emitted = rec.mat_ptr->emitted(rec.u, rec.v, rec.p);
+
     if (depth < 50 && rec.mat_ptr->scatter(r, rec, attenuation, scattered)) {
-      return attenuation * color(scattered, world, depth + 1);
+      return emitted + attenuation * color(scattered, world, depth + 1);
     }
 
     else {
-      return vec3(0.0, 0.0, 0.0);
+      return emitted;
     }
   }
 
   else {
-    vec3 unit_direction = unit_vector(r.direction());
-    float t = 0.5 * (unit_direction.y() + 1.0);
-    return (1.0 - t) * vec3(1.0, 1.0, 1.0) + t * vec3(0.5, 0.7, 1.0);
+    return vec3(0.0, 0.0, 0.0);
+    // vec3 unit_direction = unit_vector(r.direction());
+    // float t = 0.5 * (unit_direction.y() + 1.0);
+    // return (1.0 - t) * vec3(1.0, 1.0, 1.0) + t * vec3(0.5, 0.7, 1.0);
   }
 }
 
@@ -86,26 +89,37 @@ int main() {
 
   vector<thread> threads;
 
-  int nx = 480;
-  int ny = 360;
-  int ns = 100;
+  int nx = 400;
+  int ny = 400;
+  int ns = 1000;
 
-  vec3 lookfrom(13, 2, 3);
-  vec3 lookat(0, 0, 0);
-  float dist_to_focus = (lookfrom - lookat).length();
-  float aperture = 0.01;
-  float vfov = 20.0;
-
-  camera cam(lookfrom, lookat, vec3(0, 1, 0), vfov, float(nx) / float(ny),
-             aperture, dist_to_focus, 0.0, 1.0);
+  // vec3 lookfrom(13, 2, 3);
+  // vec3 lookat(0, 2, 0);
+  // float dist_to_focus = (lookfrom - lookat).length();
+  // float aperture = 0.0;
+  // float vfov = 30.0;
 
   // hitable *world = random_scene();
   // hitable *world = two_horizontal_spheres();
   // hitable *world = four_spheres();
   // hitable *world = two_checker_spheres();
   // hitable *world = two_perlin_spheres();
-  hitable *world = earth_sphere();
+  // hitable *world = earth_sphere();
+  // hitable *world = simple_light();
 
+
+  vec3 lookfrom(278, 278, -800);
+  vec3 lookat(278, 278, 0);
+  float dist_to_focus = 10;
+  float aperture = 0.0;
+  float vfov = 40.0;
+
+  hitable *world = cornell_box();
+
+  camera cam(lookfrom, lookat, vec3(0, 1, 0), vfov, float(nx) / float(ny),
+             aperture, dist_to_focus, 0.0, 1.0);
+
+  
   vec3 *image = new vec3[nx * ny];
 
   time_t start, end;

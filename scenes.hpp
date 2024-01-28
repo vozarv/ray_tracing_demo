@@ -2,6 +2,7 @@
 #include "bvh.hpp"
 #include "materials.hpp"
 #include "sphere.hpp"
+#include "rect.hpp"
 #include "texture.hpp"
 
 #define STB_IMAGE_IMPLEMENTATION
@@ -131,4 +132,56 @@ hitable *earth_sphere() {
   list[1] = new sphere(vec3(0, 2, 0), 2, mat);
 
   return new hitable_list(list, 2);
+}
+
+hitable *simple_light() {
+  texture *pertext_small = new noise_texture(2);
+
+  int nx, ny, nz;
+  unsigned char *tex_data = stbi_load("../earthmap.jpg", &nx, &ny, &nz, 0);
+  if (tex_data == NULL) {
+    std::cout << "Failed to load earthmap.jpg" << std::endl;
+    return NULL;
+  }
+  std::cout << "Loaded image with dimensions: " << nx << " " << ny << " " << nz << std::endl;
+
+
+  texture *earth_texture = new image_texture(tex_data, nx, ny);
+  material *mat = new lambertian(earth_texture);
+
+  int n = 50;
+  hitable **list = new hitable * [n + 1];
+  int i = 0;
+
+  list[i++] = new sphere(vec3(0, -1000, 0), 1000, new lambertian(new constant_texture(vec3(0.7, 0.2, 0.2))));
+  list[i++] = new sphere(vec3(0, 2, 0), 2, mat);
+  list[i++] = new sphere(vec3(0, 2, 0), 1, new diffuse_light(new constant_texture(vec3(4, 4, 4))));
+  list[i++] = new flip_normals(new  xy_rect(3, 5, 1, 3, 2, new diffuse_light(new constant_texture(vec3(4, 4, 4)))));
+  list[i++] = new xy_rect(3, 5, 1, 3, -2, new diffuse_light(new constant_texture(vec3(4, 4, 4))));
+
+  return new hitable_list(list, i);
+}
+
+hitable *cornell_box() {
+
+  int n = 50;
+
+  material *red = new lambertian(new constant_texture(vec3(0.65, 0.05, 0.05)));
+  material *white = new lambertian(new constant_texture(vec3(0.73, 0.73, 0.73)));
+  material *green = new lambertian(new constant_texture(vec3(0.12, 0.45, 0.15)));
+  material *light = new diffuse_light(new constant_texture(vec3(15, 15, 15)));
+
+  hitable **list = new hitable * [n + 1];
+
+  int i = 0;
+  list[i++] = new flip_normals(new yz_rect(  0,  555,  0,  555, 555, green));
+  list[i++] =                  new yz_rect(  0,  555,  0,  555,   0,   red);
+  list[i++] = new flip_normals(new xz_rect(  0,  555,  0,  555, 555, white));
+  list[i++] =                  new xz_rect(  0,  555,  0,  555,   0, white);
+  list[i++] = new flip_normals(new xy_rect(  0,  555,  0,  555, 555, white));
+  
+  list[i++] =                  new xz_rect(213,  343, 227, 332, 554, light);
+
+  return new hitable_list(list, i);
+
 }
