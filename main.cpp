@@ -89,9 +89,9 @@ int main() {
 
   vector<thread> threads;
 
-  int nx = 400;
-  int ny = 400;
-  int ns = 1000;
+  int nx = 200;
+  int ny = 200;
+  int ns = 200;
 
   // vec3 lookfrom(13, 2, 3);
   // vec3 lookat(0, 2, 0);
