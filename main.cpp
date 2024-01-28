@@ -89,9 +89,9 @@ int main() {
 
   vector<thread> threads;
 
-  int nx = 200;
-  int ny = 200;
-  int ns = 200;
+  int nx = 720;
+  int ny = 480;
+  int ns = 100;
 
   // vec3 lookfrom(13, 2, 3);
   // vec3 lookat(0, 2, 0);
@@ -108,14 +108,24 @@ int main() {
   // hitable *world = simple_light();
 
 
-  vec3 lookfrom(278, 278, -800);
+  // vec3 lookfrom(278, 278, -800);
+  // vec3 lookat(278, 278, 0);
+  // float dist_to_focus = 10;
+  // float aperture = 0.0;
+  // float vfov = 40.0;
+
+  //hitable *world = cornell_box();
+  //hitable *world = cornell_smoke();
+
+
+
+  vec3 lookfrom(478, 278, -600);
   vec3 lookat(278, 278, 0);
   float dist_to_focus = 10;
   float aperture = 0.0;
   float vfov = 40.0;
 
-  //hitable *world = cornell_box();
-  hitable *world = cornell_smoke();
+  hitable *world = final_scene();
 
   camera cam(lookfrom, lookat, vec3(0, 1, 0), vfov, float(nx) / float(ny),
              aperture, dist_to_focus, 0.0, 1.0);
