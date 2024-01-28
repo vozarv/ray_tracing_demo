@@ -114,7 +114,8 @@ int main() {
   float aperture = 0.0;
   float vfov = 40.0;
 
-  hitable *world = cornell_box();
+  //hitable *world = cornell_box();
+  hitable *world = cornell_smoke();
 
   camera cam(lookfrom, lookat, vec3(0, 1, 0), vfov, float(nx) / float(ny),
              aperture, dist_to_focus, 0.0, 1.0);
