@@ -9,4 +9,4 @@ Ray Tracing in One Weekend (https://raytracing.github.io/books/RayTracingInOneWe
 
 Ray Tracing: The Next Week (https://raytracing.github.io/books/RayTracingTheNextWeek.html)
 
-<img src="./images/second_book_output.png" alt="Second Book Output" width="480" height="320">
+<img src="./images/second_book_output.png" alt="Second Book Output" width="480" height="270">
