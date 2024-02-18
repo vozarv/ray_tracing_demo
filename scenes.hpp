@@ -180,6 +180,8 @@ hitable *cornell_box() {
       new lambertian(new constant_texture(vec3(0.12, 0.45, 0.15)));
   material *light = new diffuse_light(new constant_texture(vec3(15, 15, 15)));
 
+  material *aluminium = new metal(vec3(0.8, 0.85, 0.88), 0.0);
+
   hitable **list = new hitable *[n + 1];
 
   int i = 0;
@@ -195,7 +197,7 @@ hitable *cornell_box() {
       new rotate_y(new box(vec3(0, 0, 0), vec3(165, 165, 165), white), -18),
       vec3(130, 0, 65));
   list[i++] = new translate(
-      new rotate_y(new box(vec3(0, 0, 0), vec3(165, 330, 165), white), 15),
+      new rotate_y(new box(vec3(0, 0, 0), vec3(165, 330, 165), aluminium), 15),
       vec3(265, 0, 295));
 
   return new hitable_list(list, i);

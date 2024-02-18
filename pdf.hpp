@@ -25,6 +25,19 @@ public:
   onb uvw;
 };
 
+class sphere_pdf : public pdf {
+  public:
+    sphere_pdf() { }
+
+    virtual float value(const vec3& direction) const override {
+        return 1 / (4 * M_PI);
+    }
+
+    virtual vec3 generate() const override {
+        return random_in_unit_sphere();
+    }
+};
+
 class hitable_pdf : public pdf {
 public:
   hitable_pdf(hitable *p, const vec3 &origin) : ptr(p), o(origin) {}

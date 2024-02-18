@@ -3,6 +3,7 @@
 #include "float.h"
 #include "hitable_list.hpp"
 #include "materials.hpp"
+#include "pdf.hpp"
 #include "scenes.hpp"
 #include "sphere.hpp"
 #include "utils.hpp"
@@ -12,7 +13,6 @@
 #include <math.h>
 #include <stdlib.h>
 #include <thread>
-#include "pdf.hpp"
 
 using namespace std;
 
@@ -36,31 +36,31 @@ void save_image(vec3 *image, int width, int height, ofstream &file) {
 
 vec3 color(const ray &r, hitable *world, int depth) {
 
-  hit_record rec;
+  hit_record hrec;
 
-  if (world->hit(r, 0.00001, MAXFLOAT, rec)) {
-    ray scattered;
-    vec3 attenuation(0.01, 0.01, 0.01);
+  if (world->hit(r, 0.00001, MAXFLOAT, hrec)) {
 
-    vec3 emitted = rec.mat_ptr->emitted(r, rec, rec.u, rec.v, rec.p);
+    scatter_record srec;
 
-    
-    vec3 albedo;
-    float pdf_val;
+    vec3 emitted = hrec.mat_ptr->emitted(r, hrec, hrec.u, hrec.v, hrec.p);
 
-    if (depth < 50 && rec.mat_ptr->scatter(r, rec, albedo, scattered, pdf_val)) {
-      //return emitted + attenuation * color(scattered, world, depth + 1);
+    if (depth < 50 && hrec.mat_ptr->scatter(r, hrec, srec)) {
 
-      hitable *light_shape = new xz_rect(213, 343, 227, 332, 554, 0);
-      hitable_pdf p0(light_shape, rec.p);
-      cosine_pdf p1(rec.normal);
-      mixture_pdf p(&p0, &p1);
-      scattered = ray(rec.p, p.generate(), r.time());
-      pdf_val = p.value(scattered.direction());
-
-
-
-      return emitted + albedo * rec.mat_ptr->scattering_pdf(r, rec, scattered) * color(scattered, world, depth + 1) / pdf_val;
+      if (srec.is_specular) {
+        return srec.attenuation * color(srec.specular_ray, world, depth + 1);
+      } 
+      
+      else {
+        hitable *light_shape = new xz_rect(213, 343, 227, 332, 554, 0);
+        hitable_pdf p0(light_shape, hrec.p);
+        cosine_pdf p1(hrec.normal);
+        mixture_pdf p(&p0, &p1);
+        ray scattered = ray(hrec.p, p.generate(), r.time());
+        float pdf_val = p.value(scattered.direction());
+        return emitted + srec.attenuation *
+                             hrec.mat_ptr->scattering_pdf(r, hrec, scattered) *
+                             color(scattered, world, depth + 1) / pdf_val;
+      }
     }
 
     else {
@@ -70,9 +70,6 @@ vec3 color(const ray &r, hitable *world, int depth) {
 
   else {
     return vec3(0.0, 0.0, 0.0);
-    // vec3 unit_direction = unit_vector(r.direction());
-    // float t = 0.5 * (unit_direction.y() + 1.0);
-    // return (1.0 - t) * vec3(1.0, 1.0, 1.0) + t * vec3(0.5, 0.7, 1.0);
   }
 }
 
@@ -123,7 +120,6 @@ int main() {
   // hitable *world = earth_sphere();
   // hitable *world = simple_light();
 
-
   vec3 lookfrom(278, 278, -800);
   vec3 lookat(278, 278, 0);
   float dist_to_focus = 10;
@@ -131,9 +127,7 @@ int main() {
   float vfov = 40.0;
 
   hitable *world = cornell_box();
-  //hitable *world = cornell_smoke();
-
-
+  // hitable *world = cornell_smoke();
 
   // vec3 lookfrom(478, 278, -600);
   // vec3 lookat(278, 278, 0);
@@ -146,7 +140,6 @@ int main() {
   camera cam(lookfrom, lookat, vec3(0, 1, 0), vfov, float(nx) / float(ny),
              aperture, dist_to_focus, 0.0, 1.0);
 
-  
   vec3 *image = new vec3[nx * ny];
 
   time_t start, end;
