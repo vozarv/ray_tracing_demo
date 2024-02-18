@@ -16,3 +16,5 @@ find_package(Threads REQUIRED)
 add_executable(ray_tracing main.cpp)
 
 target_link_libraries(ray_tracing Threads::Threads)
+
+add_executable(cos_density_testing cos_density.cpp)

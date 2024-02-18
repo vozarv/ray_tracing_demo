@@ -11,14 +11,13 @@ double random_double(double min, double max) {
 
 vec3 random_in_unit_sphere() {
 
-  double r = random_double(0.0, 1.0);
-  double azimuth = random_double(0.0, 2.0 * M_PI);
-  double elevation = random_double(0.0, M_PI);
+    double r1 = random_double(0.0, 1.0);
+    double r2 = random_double(0.0, 1.0);
+    double x = cos(2*M_PI*r1)*2*sqrt(r2*(1-r2));
+    double y = sin(2*M_PI*r1)*2*sqrt(r2*(1-r2));
+    double z = 1 - 2*r2;
 
-  vec3 p(r * cos(elevation) * cos(azimuth), r * cos(elevation) * sin(azimuth),
-         r * sin(elevation));
-
-  return p;
+    return vec3(x,y,z);
 }
 
 vec3 random_in_unit_disk() {
@@ -38,4 +37,16 @@ void get_sphere_uv(const vec3 &p, float &u, float &v) {
 
   u = 1 - (phi + M_PI) / (2.0 * M_PI);
   v = (theta + M_PI / 2) / M_PI;
+}
+
+inline vec3 random_cosine_direction() {
+    auto r1 = random_double(0.0, 1.0);
+    auto r2 = random_double(0.0, 1.0);
+
+    auto phi = 2*M_PI*r1;
+    auto x = cos(phi)*sqrt(r2);
+    auto y = sin(phi)*sqrt(r2);
+    auto z = sqrt(1-r2);
+
+    return vec3(x, y, z);
 }
