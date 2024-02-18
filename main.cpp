@@ -12,6 +12,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include <thread>
+#include "pdf.hpp"
 
 using namespace std;
 
@@ -41,15 +42,25 @@ vec3 color(const ray &r, hitable *world, int depth) {
     ray scattered;
     vec3 attenuation(0.01, 0.01, 0.01);
 
-    vec3 emitted = rec.mat_ptr->emitted(rec.u, rec.v, rec.p);
+    vec3 emitted = rec.mat_ptr->emitted(r, rec, rec.u, rec.v, rec.p);
 
     
     vec3 albedo;
-    float pdf;
+    float pdf_val;
 
-    if (depth < 50 && rec.mat_ptr->scatter(r, rec, albedo, scattered, pdf)) {
+    if (depth < 50 && rec.mat_ptr->scatter(r, rec, albedo, scattered, pdf_val)) {
       //return emitted + attenuation * color(scattered, world, depth + 1);
-      return emitted + albedo * rec.mat_ptr->scattering_pdf(r, rec, scattered) * color(scattered, world, depth + 1) / pdf;
+
+      hitable *light_shape = new xz_rect(213, 343, 227, 332, 554, 0);
+      hitable_pdf p0(light_shape, rec.p);
+      cosine_pdf p1(rec.normal);
+      mixture_pdf p(&p0, &p1);
+      scattered = ray(rec.p, p.generate(), r.time());
+      pdf_val = p.value(scattered.direction());
+
+
+
+      return emitted + albedo * rec.mat_ptr->scattering_pdf(r, rec, scattered) * color(scattered, world, depth + 1) / pdf_val;
     }
 
     else {
