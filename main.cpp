@@ -43,8 +43,13 @@ vec3 color(const ray &r, hitable *world, int depth) {
 
     vec3 emitted = rec.mat_ptr->emitted(rec.u, rec.v, rec.p);
 
-    if (depth < 50 && rec.mat_ptr->scatter(r, rec, attenuation, scattered)) {
-      return emitted + attenuation * color(scattered, world, depth + 1);
+    
+    vec3 albedo;
+    float pdf;
+
+    if (depth < 50 && rec.mat_ptr->scatter(r, rec, albedo, scattered, pdf)) {
+      //return emitted + attenuation * color(scattered, world, depth + 1);
+      return emitted + albedo * rec.mat_ptr->scattering_pdf(r, rec, scattered) * color(scattered, world, depth + 1) / pdf;
     }
 
     else {
@@ -89,8 +94,8 @@ int main() {
 
   vector<thread> threads;
 
-  int nx = 720;
-  int ny = 480;
+  int nx = 500;
+  int ny = 500;
   int ns = 10;
 
   // vec3 lookfrom(13, 2, 3);
@@ -108,24 +113,24 @@ int main() {
   // hitable *world = simple_light();
 
 
-  // vec3 lookfrom(278, 278, -800);
-  // vec3 lookat(278, 278, 0);
-  // float dist_to_focus = 10;
-  // float aperture = 0.0;
-  // float vfov = 40.0;
-
-  //hitable *world = cornell_box();
-  //hitable *world = cornell_smoke();
-
-
-
-  vec3 lookfrom(478, 278, -600);
+  vec3 lookfrom(278, 278, -800);
   vec3 lookat(278, 278, 0);
   float dist_to_focus = 10;
   float aperture = 0.0;
   float vfov = 40.0;
 
-  hitable *world = final_scene();
+  hitable *world = cornell_box();
+  //hitable *world = cornell_smoke();
+
+
+
+  // vec3 lookfrom(478, 278, -600);
+  // vec3 lookat(278, 278, 0);
+  // float dist_to_focus = 10;
+  // float aperture = 0.0;
+  // float vfov = 40.0;
+
+  // hitable *world = final_scene();
 
   camera cam(lookfrom, lookat, vec3(0, 1, 0), vfov, float(nx) / float(ny),
              aperture, dist_to_focus, 0.0, 1.0);
