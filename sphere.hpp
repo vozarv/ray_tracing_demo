@@ -16,6 +16,25 @@ public:
     return true;
   }
 
+  float pdf_value(const vec3& o, const vec3& v) const override {
+    hit_record rec;
+    if(this->hit(ray(o, v), 0.001, FLT_MAX, rec)){
+      float cos_theta_max = sqrt(1-radius*radius/(center-o).length2());
+      float solid_angle = 2*M_PI*(1-cos_theta_max);
+      return 1/solid_angle;
+    }
+    else return 0;
+  }
+
+  vec3 random(const vec3& o) const override {
+    vec3 direction = center - o;
+    float distance_squared = direction.length2();
+    onb uvw;
+    uvw.build_from_w(direction);
+    return uvw.local(random_to_sphere(radius, distance_squared));
+    
+  }
+
   vec3 center;
   float radius;
   material *mat;

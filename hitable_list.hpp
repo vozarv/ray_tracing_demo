@@ -13,6 +13,20 @@ public:
 
   bool bounding_box(float t0, float t1, aabb &box) const override;
 
+  float pdf_value(const vec3& o, const vec3& v) const {
+    float weight = 1.0 / list_size;
+    float sum = 0.0;
+    for(int i = 0; i < list_size; i++){
+      sum += weight * list[i]->pdf_value(o, v);
+    }
+    return sum;
+  }
+
+  vec3 random(const vec3& o) const {
+    int index = random_double(0.0, 1.0) * list_size;
+    return list[index]->random(o);
+  }
+
   hitable **list;
   int list_size;
 };

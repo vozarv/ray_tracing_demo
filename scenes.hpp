@@ -203,6 +203,42 @@ hitable *cornell_box() {
   return new hitable_list(list, i);
 }
 
+hitable *cornell_glass_sphere() {
+
+  int n = 50;
+
+  material *red = new lambertian(new constant_texture(vec3(0.65, 0.05, 0.05)));
+  material *white =
+      new lambertian(new constant_texture(vec3(0.73, 0.73, 0.73)));
+  material *green =
+      new lambertian(new constant_texture(vec3(0.12, 0.45, 0.15)));
+  material *light = new diffuse_light(new constant_texture(vec3(15, 15, 15)));
+
+  material *aluminium = new metal(vec3(0.8, 0.85, 0.88), 0.0);
+
+  hitable **list = new hitable *[n + 1];
+
+  int i = 0;
+  list[i++] = new flip_normals(new yz_rect(0, 555, 0, 555, 555, green));
+  list[i++] = new yz_rect(0, 555, 0, 555, 0, red);
+  list[i++] = new flip_normals(new xz_rect(0, 555, 0, 555, 555, white));
+  list[i++] = new xz_rect(0, 555, 0, 555, 0, white);
+  list[i++] = new flip_normals(new xy_rect(0, 555, 0, 555, 555, white));
+
+  list[i++] = new xz_rect(213, 343, 227, 332, 554, light);
+
+  list[i++] = new sphere(vec3(190, 90, 190), 90, new dielectric(1.5));
+
+  // list[i++] = new translate(
+  //     new rotate_y(new box(vec3(0, 0, 0), vec3(165, 165, 165), white), -18),
+  //     vec3(130, 0, 65));
+  list[i++] = new translate(
+      new rotate_y(new box(vec3(0, 0, 0), vec3(165, 330, 165), white), 15),
+      vec3(265, 0, 295));
+
+  return new hitable_list(list, i);
+}
+
 hitable *cornell_smoke() {
 
   int n = 50;
